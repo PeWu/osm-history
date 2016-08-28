@@ -1,2 +1,1 @@
-# osm-history
-OpenStreetMap history viewer
+# [OpenStreetMap](https://openstreetmap.org) history viewer

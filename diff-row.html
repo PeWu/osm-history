@@ -1,0 +1,11 @@
+<tr ng-class="{unchanged: prev == next, warning: prev && next && prev != next}">
+  <th ng-class="{danger: next == undefined, success: prev == undefined}">
+    {{key}}
+  </th>
+  <td ng-class="{danger: next == undefined}">
+    {{prev}}
+  </td>
+  <td ng-class="{success: prev == undefined}">
+    {{next}}
+  </td>
+</tr>

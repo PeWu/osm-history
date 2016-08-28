@@ -1,0 +1,64 @@
+<div ng-if="ctrl.history">
+  <h2>History of {{ctrl.type}} {{ctrl.id}}</h2>
+  <div>
+    <a ng-href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
+      {{ctrl.type | capitalize}} on openstreetmap.org
+    </a>
+  </div>
+  <div>
+    <a ng-href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}/history">
+      History on openstreetmap.org
+    </a>
+  </div>
+  <div>
+    <div ng-repeat="change in ctrl.history">
+      <h4 class="col-xs-offset-0">
+        Version <b>#{{change.obj._version}}</b>, changeset
+        <a href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">
+          {{change.obj._changeset}}
+        </a>
+        by
+        <a href="https://www.openstreetmap.org/user/{{change.obj._user}}">
+          {{change.obj._user}}
+        </a>
+        at {{change.obj._timestamp  | date:'yyyy-MM-dd HH:mm'}}
+      </h4>
+      <div>
+        {{change.changeset.tagMap.comment || '&nbsp;'}}
+      </div>
+      <div class="col-md-8">
+      <table class="table table-condensed">
+        <colgroup>
+          <col class="col-xs-2">
+          <col class="col-xs-4">
+          <col class="col-xs-4">
+        </colgroup>
+        <tr diff-row
+            ng-repeat="diff in change.diff.tags"          
+            key="{{diff.key}}"
+            prev="diff.prev"
+            next="diff.next">
+        <tr diff-row          
+            key="Nodes"
+            prev="change.diff.nodeCount.prev"
+            next="change.diff.nodeCount.next">
+        <tr diff-row          
+            key="Members"
+            prev="change.diff.memberCount.prev"
+            next="change.diff.memberCount.next">
+        <tr diff-row
+            key="Location"
+            prev="ctrl.formatCoords(change.diff.coordinates.prev)"
+            next="ctrl.formatCoords(change.diff.coordinates.next)">
+      </table>
+      </div>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</div>
+<div ng-if="!ctrl.history && !ctrl.error">
+  Loading...
+</div>
+<div ng-if="ctrl.error" class="text-danger">
+  Error loading history.
+</div>
