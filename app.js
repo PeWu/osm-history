@@ -1,4 +1,4 @@
-var app = angular.module('osmHistory', ['ngRoute']);
+var app = angular.module('osmHistory', ['ngRoute', 'leaflet-directive']);
 
 /** Base URL for accessing OSM API. */
 API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/'
@@ -73,14 +73,8 @@ objDiff = function(prev, next) {
     next: next.member && next.member.length
   }
   var coordinates = {
-    prev: prev && prev._lat && {
-      lat: prev._lat,
-      lon: prev._lon
-    },
-    next: next && next._lat && {
-      lat: next._lat,
-      lon: next._lon
-    }
+    prev: prev && prev._lat && L.latLng([prev._lat, prev._lon]),
+    next: next && next._lat && L.latLng([next._lat, next._lon])
   }
 
   return {
@@ -134,12 +128,21 @@ fetchOsm = function($http, url, objectType) {
 /**
  * Controller for the history pages (way, node, relation).
  */
-HistoryCtrl = function($scope, $http, $routeParams, $window, $location) {
+HistoryCtrl = function(
+    $scope, $http, $routeParams, $location, leafletBoundsHelpers) {
   if (!$routeParams.id || !$routeParams.type) {
     return;
   }
   this.id = $routeParams.id;
   this.type = $routeParams.type;
+  this.leafletBoundsHelpers = leafletBoundsHelpers;
+
+  this.mapTiles = {
+    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {
+      maxZoom: 19
+    }
+  };
 
   var url = `${API_URL_BASE}${this.type}/${this.id}/history`;
   fetchOsm($http, url, this.type).then(history => {
@@ -154,6 +157,9 @@ HistoryCtrl = function($scope, $http, $routeParams, $window, $location) {
     });
     this.history.reverse();  // Start with the newest change.
 
+    this.populateMapData();
+
+    // Fetch changeset data for all changes to display the changeset message.
     var changesets = this.history.map(entry => entry.obj._changeset);
     var url = `${API_URL_BASE}changesets?changesets=${changesets.join(',')}`;
     fetchOsm($http, url, 'changeset').then(changesets => {
@@ -169,11 +175,47 @@ HistoryCtrl = function($scope, $http, $routeParams, $window, $location) {
 };
 
 
+/** Adds data to be rendered on a map for each change. */
+HistoryCtrl.prototype.populateMapData = function() {
+  this.history.forEach(change => {
+    var prev = change.diff.coordinates.prev;
+    var next = change.diff.coordinates.next;
+    if ((!prev && !next) || (prev && prev.equals(next))) return;
+
+    var bounds = L.latLngBounds();
+    bounds.extend(prev);
+    bounds.extend(next);
+    change.mapData = {
+      bounds: this.leafletBoundsHelpers.createBoundsFromLeaflet(bounds),
+      paths: {}
+    };
+    if (prev) {
+      change.mapData.paths.prev = {
+        type: 'circleMarker',
+        radius: 5,
+        weight: 3,
+        color: '#a00',
+        latlngs: prev
+      };
+    }
+    if (next) {
+      change.mapData.paths.next = {
+        type: 'circleMarker',
+        radius: 5,
+        weight: 3,
+        color: '#0a0',
+        latlngs: next
+      };
+    }
+  });
+}
+
+
 /**
  * Formats the coordinates as string.
  */
 HistoryCtrl.prototype.formatCoords = function(coords) {
-  return coords && `${coords.lat}, ${coords.lon}`;
+  return coords && `${coords.lat}, ${coords.lng}`;
 };
 
 
@@ -206,6 +248,11 @@ app.config(function($routeProvider) {
         controller: 'HistoryCtrl',
         controllerAs: 'ctrl'
       });
+});
+
+// Disable debug logs.
+app.config(function($logProvider) {
+  $logProvider.debugEnabled(false);
 });
 
 // Configure Analytics.

@@ -2,10 +2,6 @@
   display: none;
 }
 
-h4 {
-  margin-top: 30px;
-}
-
 table {
   margin-top: 10px;
 }
@@ -17,4 +13,12 @@ label {
 h1 a, h1 a:hover, h1 a:visited, h1 a:active {
   text-decoration: none;
   color: black;
+}
+
+h3 a {
+  font-weight: bold;
+}
+
+.leaflet-tile-pane {
+  opacity: 0.7;
 }
