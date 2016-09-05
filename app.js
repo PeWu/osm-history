@@ -25,6 +25,11 @@ HomeCtrl.prototype.showHistory = function(type, id) {
   }
 }
 
+/** Returns a leaflet LatLng object for the given node. */
+latLngFromNode = function(node) {
+  return node && node._lat && node._lon && L.latLng([node._lat, node._lon]);
+}
+
 
 /**
  * Returns a list of tags with previous and next values.
@@ -73,8 +78,8 @@ objDiff = function(prev, next) {
     next: next.member && next.member.length
   }
   var coordinates = {
-    prev: prev && prev._lat && L.latLng([prev._lat, prev._lon]),
-    next: next && next._lat && L.latLng([next._lat, next._lon])
+    prev: latLngFromNode(prev),
+    next: latLngFromNode(next)
   }
 
   return {
@@ -129,16 +134,18 @@ fetchOsm = function($http, url, objectType) {
  * Controller for the history pages (way, node, relation).
  */
 HistoryCtrl = function(
-    $scope, $http, $routeParams, $location, leafletBoundsHelpers) {
+    $scope, $q, $http, $routeParams, $location, leafletBoundsHelpers) {
   if (!$routeParams.id || !$routeParams.type) {
     return;
   }
   this.id = $routeParams.id;
   this.type = $routeParams.type;
+  this.ngQ = $q;
+  this.ngHttp = $http;
   this.leafletBoundsHelpers = leafletBoundsHelpers;
 
   this.mapTiles = {
-    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     options: {
       maxZoom: 19
     }
@@ -157,25 +164,231 @@ HistoryCtrl = function(
     });
     this.history.reverse();  // Start with the newest change.
 
-    this.populateMapData();
+    this.populateChangesets();
 
-    // Fetch changeset data for all changes to display the changeset message.
-    var changesets = this.history.map(entry => entry.obj._changeset);
-    var url = `${API_URL_BASE}changesets?changesets=${changesets.join(',')}`;
-    fetchOsm($http, url, 'changeset').then(changesets => {
-      var changesetMap = new Map();
-      changesets.forEach(cs => changesetMap.set(cs._id, cs));
-      this.history.forEach(entry => {
-        entry.changeset = changesetMap.get(entry.obj._changeset);
-      });
-    });
+    this.populateWayHistory().then(() => this.populateWayMapData());
+
+    this.populateMapData();
   }).catch(error => {
     this.error = error;
   });
 };
 
 
-/** Adds data to be rendered on a map for each change. */
+
+/**
+ * Fetches changeset data for all changes.
+ * This is used to display changeset messages.
+ */
+HistoryCtrl.prototype.populateChangesets = function() {
+  var changesets = this.history.map(entry => entry.obj._changeset);
+  var url = `${API_URL_BASE}changesets?changesets=${changesets.join(',')}`;
+  fetchOsm(this.ngHttp, url, 'changeset').then(changesets => {
+    var changesetMap = new Map();
+    changesets.forEach(cs => changesetMap.set(cs._id, cs));
+    this.history.forEach(entry => {
+      entry.changeset = changesetMap.get(entry.obj._changeset);
+    });
+  });
+};
+
+
+/**
+ * Given the full history of nodes, returns the view of the given node
+ * at the given changeset.
+ */
+getHistoricalNode = function(nodeHistory, nodeId, changeset) {
+  return nodeHistory[nodeId].find(node =>
+      parseInt(node._changeset) <= parseInt(changeset));
+};
+
+
+/**
+ * Converts the given list of nodes to a list of segments (from node, to node).
+ */
+getSegments = function(nodes) {
+  var segments = [];
+  for (var i = 1; i < nodes.length; i++) {
+    segments.push({from: nodes[i - 1], to: nodes[i]});
+  }
+  return segments;
+};
+
+
+/**
+ * Returns lists of changed way segments based on the state of the way
+ * before and after the change.
+ * @param prev list of nodes before the change.
+ * @param next list of nodes after the change.
+ * @return 3 lists of segments (from node, to node): added, removed
+ *     and unchanged.
+ */
+nodeListDiff = function(prev, next) {
+  var prevIds = prev && prev.map(node => node._id);
+  var nextIds = next && next.map(node => node._id);
+  var prevIdsSet = new Set(prevIds);
+  var nextIdsSet = new Set(nextIds);
+
+  var removedIds = new Set([...prevIdsSet].filter(x => !nextIdsSet.has(x)));
+  var addedIds = new Set([...nextIdsSet].filter(x => !prevIdsSet.has(x)));
+
+  if ((!prev || prev.length < 2) && (!next || next.length < 2)) {
+    return null;
+  }
+  if (!prev || prev.length < 2) {
+    return {
+      added: getSegments(next)
+    }
+  }
+  if (!next || next.length < 2) {
+    return {
+      removed: getSegments(prev)
+    }
+  }
+
+  var added = [];
+  var removed = [];
+  var unchanged = [];
+
+  var prevIt = 0;
+  var nextIt = 0;
+
+  // Iterate over both previous and next lists of nodes and mark added,
+  // removed and unchanged segments.
+  while (prevIt < prev.length || nextIt < next.length) {
+    var startPrev = prev[prevIt - 1];
+    var startNext = next[nextIt - 1];
+    var endPrev = prev[prevIt];
+    var endNext = next[nextIt];
+    var startSameId = startPrev && startNext && startPrev._id == startNext._id;
+    var endSameId = endPrev && endNext && endPrev._id == endNext._id;
+    var startEqual = (startSameId && startPrev._lat == startNext._lat &&
+        startPrev._lon == startNext._lon);
+    var endEqual = (endSameId && endPrev._lat == endNext._lat &&
+        endPrev._lon == endNext._lon);
+
+    if (startEqual && endEqual) {
+      unchanged.push({from: startPrev, to: endPrev});
+      prevIt++;
+      nextIt++;
+    } else {
+      if (endSameId || (endPrev && removedIds.has(endPrev._id))) {
+        if (startPrev) {
+          removed.push({from: startPrev, to: endPrev});
+        }
+        prevIt++;
+      }
+      if (endSameId || (endNext && addedIds.has(endNext._id))) {
+        if (startNext) {
+          added.push({from: startNext, to: endNext});
+        }
+        nextIt++;
+      }
+      // Changed order of nodes.
+      if (endPrev && endNext && !endSameId && !removedIds.has(endPrev._id) &&
+          !addedIds.has(endNext._id)) {
+        if (startPrev) {
+          removed.push({from: startPrev, to: endPrev});
+        }
+        if (startNext) {
+          added.push({from: startNext, to: endNext});
+        }
+        prevIt++;
+        nextIt++;
+      }
+    }
+  }
+
+  return {
+    added: added,
+    removed: removed,
+    unchanged: unchanged
+  };
+};
+
+
+/**
+ * Fetches node history for all historical nodes of a way and populates the
+ * nodeListDiff for all changes. The nodeListDiff field contains lists of
+ * added, removed and unchanged segments of the way.
+ * Returns a promise that is resolved when all data has been populated.
+ */
+HistoryCtrl.prototype.populateWayHistory = function() {
+  var nodes = new Set();
+  this.history.forEach(change => {
+    if (change.obj.nd) {
+      change.obj.nd.forEach(node => nodes.add(node._ref));
+    }
+  });
+  var nodeHistory = {};
+  var nodePromises = [...nodes].map(nodeId => {
+    var url = `${API_URL_BASE}node/${nodeId}/history`;
+    return fetchOsm(this.ngHttp, url, 'node').then(history => {
+      history.reverse();
+      nodeHistory[nodeId] = history;
+    });
+  });
+  return this.ngQ.all(nodePromises).then(() => {
+    this.history.forEach(change => {
+      if (change.obj.nd) {
+        change.nodes = change.obj.nd.map(node =>
+            getHistoricalNode(nodeHistory, node._ref, change.obj._changeset));
+      }
+    });
+
+    var reverseHistory = this.history.slice(0).reverse();
+    var prev = null;
+    reverseHistory.forEach(change => {
+      change.nodeListDiff = nodeListDiff(prev && prev.nodes, change.nodes);
+      prev = change;
+    });
+  });
+};
+
+
+/** Creates a line to be drawn on a map. */
+createLine = function(segment, color) {
+  return {
+    type: 'polyline',
+    weight: 5,
+    color: color,
+    opacity: 0.7,
+    latlngs: [latLngFromNode(segment.from), latLngFromNode(segment.to)]
+  };
+};
+
+
+/** Adds way data to be rendered on a map for each change. */
+HistoryCtrl.prototype.populateWayMapData = function() {
+  this.history.forEach(change => {
+    if (!change.nodeListDiff) return;
+    var added = change.nodeListDiff.added || [];
+    var removed = change.nodeListDiff.removed || [];
+    var unchanged = change.nodeListDiff.unchanged || [];
+    var allSegments = added.concat(removed).concat(unchanged);
+
+    if (!added.length && !removed.length) return;
+
+    var bounds = L.latLngBounds();
+    allSegments.forEach(segment => {
+      bounds.extend(latLngFromNode(segment.from));
+      bounds.extend(latLngFromNode(segment.to));
+    });
+
+    var paths = ([]
+        .concat(unchanged.map(segment => createLine(segment, '#444')))
+        .concat(removed.map(segment => createLine(segment, '#a00')))
+        .concat(added.map(segment => createLine(segment, '#0a0'))));
+
+    change.mapData = {
+      bounds: this.leafletBoundsHelpers.createBoundsFromLeaflet(bounds),
+      paths: paths
+    };
+  });
+};
+
+
+/** Adds node data to be rendered on a map for each change. */
 HistoryCtrl.prototype.populateMapData = function() {
   this.history.forEach(change => {
     var prev = change.diff.coordinates.prev;
@@ -208,7 +421,7 @@ HistoryCtrl.prototype.populateMapData = function() {
       };
     }
   });
-}
+};
 
 
 /**
