@@ -1,18 +1,18 @@
 <div class="panel panel-default col-md-6">
   <div class="panel-body">
-    <form ng-submit="ctrl.showHistory('way', ctrl.wayId)">
-      <label for="way-id">Way</label>
+    <form ng-submit="ctrl.showHistory('node', ctrl.nodeId)">
+      <label for="node-id">Node</label>
       <div class="input-group col-lg-6">
-        <input type="number" class="form-control" placeholder="way id" id="way-id" ng-model="ctrl.wayId">
+        <input type="number" class="form-control" placeholder="node id" id="node-id" ng-model="ctrl.nodeId">
         <span class="input-group-btn">
           <button class="btn btn-default" type="submit">Go!</button>
         </span>
       </div>
     </form>
-    <form ng-submit="ctrl.showHistory('node', ctrl.nodeId)">
-      <label for="node-id">Node</label>
+    <form ng-submit="ctrl.showHistory('way', ctrl.wayId)">
+      <label for="way-id">Way</label>
       <div class="input-group col-lg-6">
-        <input type="number" class="form-control" placeholder="node id" id="node-id" ng-model="ctrl.nodeId">
+        <input type="number" class="form-control" placeholder="way id" id="way-id" ng-model="ctrl.wayId">
         <span class="input-group-btn">
           <button class="btn btn-default" type="submit">Go!</button>
         </span>
