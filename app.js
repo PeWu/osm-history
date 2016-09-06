@@ -147,7 +147,8 @@ HistoryCtrl = function(
   this.mapTiles = {
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     options: {
-      maxZoom: 19
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
     }
   };
 
