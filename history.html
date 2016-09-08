@@ -1,34 +1,34 @@
-<div ng-if="ctrl.history">
-  <h2>{{ctrl.type | capitalize}} {{ctrl.id}}</h2>
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <a class="btn btn-success" role="button"
-         href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
-        OSM
-      </a>
-      <a class="btn btn-danger" role="button"
-         href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}">
-        Edit
-      </a>
-      <a class="btn btn-danger" role="button"
-         href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}">
-        RawEdit
-      </a>
-      <a class="btn btn-danger" role="button"
-         href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}">
-        Level0
-      </a>
-      <a class="btn btn-warning" role="button"
-         href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}">
-        Deep History
-      </a>
-      <a class="btn btn-primary" role="button" ng-if="ctrl.type == 'relation'"
-         href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
-        Relation Analyzer
-      </a>
-    </div>
+<h2>{{ctrl.type | capitalize}} {{ctrl.id}}</h2>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <a class="btn btn-success" role="button"
+       href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
+      OSM
+    </a>
+    <a class="btn btn-danger" role="button"
+       href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}">
+      Edit
+    </a>
+    <a class="btn btn-danger" role="button"
+       href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}">
+      RawEdit
+    </a>
+    <a class="btn btn-danger" role="button"
+       href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}">
+      Level0
+    </a>
+    <a class="btn btn-warning" role="button"
+       href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}">
+      Deep History
+    </a>
+    <a class="btn btn-primary" role="button" ng-if="ctrl.type == 'relation'"
+       href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
+      Relation Analyzer
+    </a>
   </div>
-  <h2>History</h2>
+</div>
+<h2>History</h2>
+<div ng-if="ctrl.history">
   <div ng-repeat="change in ctrl.history" class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
