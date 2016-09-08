@@ -58,48 +58,53 @@
       </h3>
     </div>
     <div class="panel-body">
-      <div>
+      <div class="comment">
         {{change.changeset.tagMap.comment || '&nbsp;'}}
       </div>
-      <div class="col-md-8">
-        <table class="table table-condensed">
-          <colgroup>
-            <col class="col-xs-2">
-            <col class="col-xs-4">
-            <col class="col-xs-4">
-          </colgroup>
-          <tr diff-row
-              ng-repeat="diff in change.diff.tags"
-              key="{{diff.key}}"
-              prev="diff.prev"
-              next="diff.next">
-          <tr diff-row
-              key="Nodes"
-              prev="change.diff.nodeCount.prev"
-              next="change.diff.nodeCount.next">
-          <tr diff-row
-              key="Members"
-              prev="change.diff.memberCount.prev"
-              next="change.diff.memberCount.next">
-          <tr diff-row
-              key="Location"
-              prev="ctrl.formatCoords(change.diff.coordinates.prev)"
-              next="ctrl.formatCoords(change.diff.coordinates.next)">
-        </table>
+      <div ng-if="change.obj._visible != 'true'" class="alert alert-danger" role="alert">
+        <b>{{ctrl.type | uppercase}} DELETED</b>
       </div>
-      <leaflet
-          ng-if="change.mapData"
-          paths="change.mapData.paths"
-          bounds="change.mapData.bounds"
-          tiles="ctrl.mapTiles"
-          height="200px"
-          width="100%"></leaflet>
+      <div ng-if="change.obj._visible == 'true'">
+        <div class="col-md-8">
+          <table class="table table-condensed">
+            <colgroup>
+              <col class="col-xs-2">
+              <col class="col-xs-4">
+              <col class="col-xs-4">
+            </colgroup>
+            <tr diff-row
+                ng-repeat="diff in change.diff.tags"
+                key="{{diff.key}}"
+                prev="diff.prev"
+                next="diff.next">
+            <tr diff-row
+                key="Nodes"
+                prev="change.diff.nodeCount.prev"
+                next="change.diff.nodeCount.next">
+            <tr diff-row
+                key="Members"
+                prev="change.diff.memberCount.prev"
+                next="change.diff.memberCount.next">
+            <tr diff-row
+                key="Location"
+                prev="ctrl.formatCoords(change.diff.coordinates.prev)"
+                next="ctrl.formatCoords(change.diff.coordinates.next)">
+          </table>
+        </div>
+        <leaflet
+            ng-if="change.mapData"
+            paths="change.mapData.paths"
+            bounds="change.mapData.bounds"
+            tiles="ctrl.mapTiles"
+            height="200px"
+            width="100%"></leaflet>
+      </div>
     </div>
   </div>
 </div>
 <div ng-if="!ctrl.history && !ctrl.error">
   Loading...
 </div>
-<div ng-if="ctrl.error" class="text-danger">
+<div ng-if="ctrl.error" class="alert alert-danger" role="alert">
   Error loading history.
 </div>
