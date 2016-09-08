@@ -10,7 +10,11 @@ label {
   margin-top: 6px;
 }
 
-h1 a, h1 a:hover, h1 a:visited, h1 a:active {
+h1 {
+  font-weight: bold;
+}
+
+h1 a:hover, h1 a:visited, h1 a:active, h1 a:link {
   text-decoration: none;
   color: black;
 }
@@ -21,4 +25,8 @@ h3 a {
 
 .leaflet-tile-pane {
   opacity: 0.7;
+}
+
+h3 .btn {
+  color: white;
 }

@@ -1,27 +1,60 @@
 <div ng-if="ctrl.history">
-  <h2>History of {{ctrl.type}} {{ctrl.id}}</h2>
+  <h2>{{ctrl.type | capitalize}} {{ctrl.id}}</h2>
   <div class="panel panel-default">
     <div class="panel-body">
-      <div>
-        <a ng-href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
-          {{ctrl.type | capitalize}} on openstreetmap.org
-        </a>
-      </div>
-      <div>
-        <a ng-href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}/history">
-          History on openstreetmap.org
-        </a>
-      </div>
+      <a class="btn btn-success" role="button"
+         href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
+        OSM
+      </a>
+      <a class="btn btn-danger" role="button"
+         href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}">
+        Edit
+      </a>
+      <a class="btn btn-danger" role="button"
+         href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}">
+        RawEdit
+      </a>
+      <a class="btn btn-danger" role="button"
+         href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}">
+        Level0
+      </a>
+      <a class="btn btn-warning" role="button"
+         href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}">
+        Deep History
+      </a>
+      <a class="btn btn-primary" role="button" ng-if="ctrl.type == 'relation'"
+         href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
+        Relation Analyzer
+      </a>
     </div>
   </div>
+  <h2>History</h2>
   <div ng-repeat="change in ctrl.history" class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">
-          Version <b>#{{change.obj._version}}</b>, changeset
-          <a href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">{{change.obj._changeset}}</a>
-          by
-          <a href="https://www.openstreetmap.org/user/{{change.obj._user}}">{{change.obj._user}}</a>
-          at {{change.obj._timestamp  | date:'yyyy-MM-dd HH:mm'}}
+        Version <b>#{{change.obj._version}}</b>, changeset
+        <a href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">{{change.obj._changeset}}</a>
+        by
+        <a href="https://www.openstreetmap.org/user/{{change.obj._user}}">{{change.obj._user}}</a>
+        at {{change.obj._timestamp  | date:'yyyy-MM-dd HH:mm'}}
+        <div class="pull-right">
+          <a class="btn btn-success btn-xs" role="button"
+             href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">
+            OSM
+          </a>
+          <a class="btn btn-warning btn-xs" role="button"
+             href="https://overpass-api.de/achavi/?changeset={{change.obj._changeset}}">
+            Achavi
+          </a>
+          <a class="btn btn-warning btn-xs" role="button"
+             href="http://osmhv.openstreetmap.de/changeset.jsp?id={{change.obj._changeset}}">
+            OSMHV
+          </a>
+          <a class="btn btn-info btn-xs" role="button"
+             href="http://hdyc.neis-one.org/?{{change.obj._user}}">
+            User contribution
+          </a>
+        </div>
       </h3>
     </div>
     <div class="panel-body">
