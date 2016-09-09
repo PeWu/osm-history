@@ -7,7 +7,8 @@ API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/'
 /**
  * Controller for the home page.
  */
-HomeCtrl = function($location) {
+HomeCtrl = function($rootScope, $location) {
+  $rootScope.title = 'OSM history';
   this.wayId;
   this.nodeId;
   this.relationId;
@@ -134,7 +135,8 @@ fetchOsm = function($http, url, objectType) {
  * Controller for the history pages (way, node, relation).
  */
 HistoryCtrl = function(
-    $scope, $q, $http, $routeParams, $location, leafletBoundsHelpers) {
+    $scope, $rootScope, $q, $http, $routeParams, $location,
+    leafletBoundsHelpers) {
   if (!$routeParams.id || !$routeParams.type) {
     return;
   }
@@ -143,6 +145,8 @@ HistoryCtrl = function(
   this.ngQ = $q;
   this.ngHttp = $http;
   this.leafletBoundsHelpers = leafletBoundsHelpers;
+
+  $rootScope.title = `OSM history: ${this.type} ${this.id}`
 
   this.mapTiles = {
     url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
