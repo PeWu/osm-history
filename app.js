@@ -1,7 +1,18 @@
 var app = angular.module('osmHistory', ['ngRoute', 'leaflet-directive']);
 
 /** Base URL for accessing OSM API. */
-API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/'
+API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/';
+
+
+extendBounds = function(latLng) {
+  var DELTA = 0.001;
+  var deltaLng = Math.asin(
+    Math.sin(DELTA * Math.PI / 180) / Math.cos(latLng.lat * Math.PI / 180)) *
+    180 / Math.PI;
+  return L.latLngBounds(
+      [latLng.lat - DELTA, latLng.lng - deltaLng],
+      [latLng.lat + DELTA, latLng.lng + deltaLng]);
+};
 
 
 /**
@@ -14,7 +25,7 @@ HomeCtrl = function($rootScope, $location) {
   this.relationId;
 
   this.ngLocation = $location;
-}
+};
 
 
 /**
@@ -24,12 +35,13 @@ HomeCtrl.prototype.showHistory = function(type, id) {
   if (id) {
     this.ngLocation.path(`/${type}/${id}`);
   }
-}
+};
+
 
 /** Returns a leaflet LatLng object for the given node. */
 latLngFromNode = function(node) {
   return node && node._lat && node._lon && L.latLng([node._lat, node._lon]);
-}
+};
 
 
 /**
@@ -89,7 +101,7 @@ objDiff = function(prev, next) {
     memberCount: memberCount,
     coordinates: coordinates
   };
-}
+};
 
 
 /**
@@ -101,7 +113,7 @@ tagMap = function(tags) {
     result[tag._k] = tag._v;
   });
   return result;
-}
+};
 
 
 /**
@@ -135,7 +147,7 @@ fetchOsm = function($http, url, objectType) {
  * Controller for the history pages (way, node, relation).
  */
 HistoryCtrl = function(
-    $scope, $rootScope, $q, $http, $routeParams, $location,
+    $scope, $rootScope, $q, $http, $routeParams, $location, $timeout,
     leafletBoundsHelpers) {
   if (!$routeParams.id || !$routeParams.type) {
     return;
@@ -144,6 +156,7 @@ HistoryCtrl = function(
   this.type = $routeParams.type;
   this.ngQ = $q;
   this.ngHttp = $http;
+  this.ngTimeout = $timeout;
   this.leafletBoundsHelpers = leafletBoundsHelpers;
 
   $rootScope.title = `OSM history: ${this.type} ${this.id}`
@@ -168,6 +181,12 @@ HistoryCtrl = function(
       };
     });
     this.history.reverse();  // Start with the newest change.
+    var currentObj = this.history[0].obj;
+    this.deleted = currentObj._visible == 'false';
+    if (this.type == 'node' && !this.deleted) {
+      var latLng = latLngFromNode(currentObj);
+      this.extendedBounds = extendBounds(latLng);
+    }
 
     this.populateChangesets();
 
@@ -178,7 +197,6 @@ HistoryCtrl = function(
     this.error = error;
   });
 };
-
 
 
 /**
@@ -197,6 +215,29 @@ HistoryCtrl.prototype.populateChangesets = function() {
   });
 };
 
+
+HistoryCtrl.prototype.openJosm = function() {
+  this.josmFailed = false;
+  this.josmSuccessful = false;
+  var url = 'http://localhost:8111/load_and_zoom' +
+      `?left=${this.extendedBounds.getWest()}` +
+      `&right=${this.extendedBounds.getEast()}` +
+      `&top=${this.extendedBounds.getNorth()}` +
+      `&bottom=${this.extendedBounds.getSouth()}` +
+      `&select=${this.type[0]}${this.id}`;
+  this.ngHttp.get(url).then(
+      () => {
+        this.josmSuccessful = true;
+      },
+      () => {
+        this.josmFailed = true;
+      }).then(() => {
+        this.ngTimeout(() => {
+          this.josmFailed = false;
+          this.josmSuccessful = false;
+        }, 3000);
+      });
+};
 
 /**
  * Given the full history of nodes, returns the view of the given node
@@ -452,6 +493,7 @@ DiffRowDirective = function() {
     }
   };
 };
+
 
 // Configure routes.
 app.config(function($routeProvider) {
