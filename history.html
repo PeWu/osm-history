@@ -5,7 +5,9 @@
        href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
       OSM
     </a>
-    <a class="btn btn-primary" role="button" ng-if="ctrl.type=='node' && !ctrl.deleted"
+    <a class="btn btn-primary" role="button"
+       ng-if="!ctrl.deleted"
+       ng-disabled="!ctrl.extendedBounds"
        ng-click="ctrl.openJosm()">
       JOSM
     </a>

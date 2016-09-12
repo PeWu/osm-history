@@ -19,6 +19,18 @@ extendBounds = function(latLng) {
 
 
 /**
+ * Returns bounds for the given list of nodes.
+ */
+getBounds = function(nodes) {
+  var bounds = L.latLngBounds();
+  nodes.forEach(node => {
+    bounds.extend(latLngFromNode(node));
+  });
+  return bounds;
+};
+
+
+/**
  * Controller for the home page.
  */
 HomeCtrl = function($rootScope, $location) {
@@ -193,7 +205,16 @@ HistoryCtrl = function(
 
     this.populateChangesets();
 
-    this.populateWayHistory().then(() => this.populateWayMapData());
+    this.populateWayHistory().then(() => {
+      this.populateWayMapData();
+      // Calculate bounds for JOSM link.
+      if (this.type == 'way' && this.history[0].nodes) {
+        var bounds = getBounds(this.history[0].nodes);
+        this.extendedBounds = L.latLngBounds(
+          extendBounds(bounds.getSouthWest()).getSouthWest(),
+          extendBounds(bounds.getNorthEast()).getNorthEast());
+      }
+    });
 
     this.populateMapData();
   }).catch(error => {
@@ -422,12 +443,7 @@ HistoryCtrl.prototype.populateWayMapData = function() {
 
     if (!added.length && !removed.length) return;
 
-    var bounds = L.latLngBounds();
-    allSegments.forEach(segment => {
-      bounds.extend(latLngFromNode(segment.from));
-      bounds.extend(latLngFromNode(segment.to));
-    });
-
+    var bounds = getBounds(change.nodes);
     var paths = ([]
         .concat(unchanged.map(segment => createLine(segment, '#444')))
         .concat(removed.map(segment => createLine(segment, '#a00')))
