@@ -4,6 +4,9 @@ var app = angular.module('osmHistory', ['ngRoute', 'leaflet-directive']);
 API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/';
 
 
+/**
+ * For the given point, returns square bounds around it.
+ */
 extendBounds = function(latLng) {
   var DELTA = 0.001;
   var deltaLng = Math.asin(
@@ -216,6 +219,9 @@ HistoryCtrl.prototype.populateChangesets = function() {
 };
 
 
+/**
+ * Opens the JOSM editor with extendedBounds around the currently viewed object.
+ */
 HistoryCtrl.prototype.openJosm = function() {
   this.josmFailed = false;
   this.josmSuccessful = false;
@@ -238,6 +244,7 @@ HistoryCtrl.prototype.openJosm = function() {
         }, 3000);
       });
 };
+
 
 /**
  * Given the full history of nodes, returns the view of the given node
