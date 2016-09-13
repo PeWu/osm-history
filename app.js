@@ -407,6 +407,11 @@ HistoryCtrl.prototype.populateWayHistory = function() {
       if (change.obj.nd) {
         change.nodes = change.obj.nd.map(node =>
             getHistoricalNode(nodeHistory, node._ref, change.obj._changeset));
+        // There are cases where a way from changeset X contains a node N
+        // and the history of node N starts from a changeset later than X.
+        // In this case, we ignore such nodes for rendering.
+        // E.g. way/3323922
+        change.nodes = change.nodes.filter(n => !!n);
       }
     });
 
