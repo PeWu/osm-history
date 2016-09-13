@@ -6,20 +6,23 @@
       OSM
     </a>
     <a class="btn btn-primary" role="button"
-       ng-if="!ctrl.deleted"
-       ng-disabled="!ctrl.extendedBounds"
+       ng-if="ctrl.type != 'relation'"
+       ng-disabled="ctrl.deleted || !ctrl.extendedBounds"
        ng-click="ctrl.openJosm()">
       JOSM
     </a>
-    <a class="btn btn-primary" role="button" ng-if="!ctrl.deleted"
+    <a class="btn btn-primary" role="button"
+       ng-disabled="ctrl.deleted"
        href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}">
       Edit
     </a>
-    <a class="btn btn-danger" role="button" ng-if="!ctrl.deleted"
+    <a class="btn btn-danger" role="button"
+       ng-disabled="ctrl.deleted"
        href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}">
       RawEdit
     </a>
-    <a class="btn btn-danger" role="button" ng-if="!ctrl.deleted"
+    <a class="btn btn-danger" role="button"
+       ng-disabled="ctrl.deleted"
        href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}">
       Level0
     </a>
@@ -27,7 +30,9 @@
        href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}">
       Deep History
     </a>
-    <a class="btn btn-primary" role="button" ng-if="ctrl.type == 'relation'"
+    <a class="btn btn-primary" role="button"
+       ng-if="ctrl.type == 'relation'"
+       ng-disabled="ctrl.deleted"
        href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
       Relation Analyzer
     </a>
