@@ -241,29 +241,16 @@ HistoryCtrl.prototype.populateChangesets = function() {
 
 
 /**
- * Opens the JOSM editor with extendedBounds around the currently viewed object.
+ * Returns the link to open the JOSM editor with extendedBounds around
+ * the currently viewed object.
  */
-HistoryCtrl.prototype.openJosm = function() {
-  this.josmFailed = false;
-  this.josmSuccessful = false;
-  var url = 'http://localhost:8111/load_and_zoom' +
+HistoryCtrl.prototype.getJosmLink = function() {
+  return 'http://localhost:8111/load_and_zoom' +
       `?left=${this.extendedBounds.getWest()}` +
       `&right=${this.extendedBounds.getEast()}` +
       `&top=${this.extendedBounds.getNorth()}` +
       `&bottom=${this.extendedBounds.getSouth()}` +
       `&select=${this.type[0]}${this.id}`;
-  this.ngHttp.get(url).then(
-      () => {
-        this.josmSuccessful = true;
-      },
-      () => {
-        this.josmFailed = true;
-      }).then(() => {
-        this.ngTimeout(() => {
-          this.josmFailed = false;
-          this.josmSuccessful = false;
-        }, 3000);
-      });
 };
 
 

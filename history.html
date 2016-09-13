@@ -8,7 +8,8 @@
     <a class="btn btn-primary" role="button"
        ng-if="ctrl.type != 'relation'"
        ng-disabled="ctrl.deleted || !ctrl.extendedBounds"
-       ng-click="ctrl.openJosm()">
+       href="{{ctrl.getJosmLink()}}"
+       target="_blank">
       JOSM
     </a>
     <a class="btn btn-primary" role="button"
@@ -40,12 +41,6 @@
        href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
       Relation Analyzer
     </a>
-    <div class="alert alert-success" role="alert" ng-show="ctrl.josmSuccessful">
-      JOSM request sent.
-    </div>
-    <div class="alert alert-danger" role="alert" ng-show="ctrl.josmFailed">
-      JOSM request failed.
-    </div>
   </div>
 </div>
 <h2>History</h2>
