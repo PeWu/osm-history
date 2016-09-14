@@ -517,7 +517,9 @@ HistoryCtrl.prototype.populateWayMapData = function() {
 
     if (!added.length && !removed.length) return;
 
-    var bounds = getBounds(change.nodes);
+    var allNodes =
+        allSegments.map((s) => s.from).concat(allSegments.map((s) => s.to));
+    var bounds = getBounds(allNodes);
     var paths = ([]
         .concat(unchanged.map(segment => createLine(segment, '#444')))
         .concat(removed.map(segment => createLine(segment, '#a00')))
