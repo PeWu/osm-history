@@ -518,7 +518,7 @@ HistoryCtrl.prototype.populateWayMapData = function() {
     if (!added.length && !removed.length) return;
 
     var allNodes =
-        allSegments.map((s) => s.from).concat(allSegments.map((s) => s.to));
+        allSegments.map(s => s.from).concat(allSegments.map(s => s.to));
     var bounds = getBounds(allNodes);
     var paths = ([]
         .concat(unchanged.map(segment => createLine(segment, '#444')))
@@ -620,7 +620,9 @@ app.run(function($rootScope, $location, $window) {
     if (!$window.ga) {
       return;
     }
-    $window.ga('send', 'pageview', {page: $location.path()});
+    // Replace numeric object ID in path with a placeholder.
+    var path = $location.path().replace(/\d+/, ':id');
+    $window.ga('send', 'pageview', {page: path});
   });
 });
 
