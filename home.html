@@ -2,29 +2,50 @@
   <div class="panel-body">
     <form ng-submit="ctrl.showHistory('node', ctrl.nodeId)">
       <label for="node-id">Node</label>
-      <div class="input-group col-lg-3 col-md-4">
-        <input type="number" class="form-control" placeholder="node id" id="node-id" ng-model="ctrl.nodeId">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="submit">Go!</button>
-        </span>
+      <div class="row">
+        <div class="col-lg-3 col-md-4">
+          <div class="input-group">
+            <input type="number" class="form-control" placeholder="node id" id="node-id" ng-model="ctrl.nodeId">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">Go!</button>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('node')">
+        </div>
       </div>
     </form>
     <form ng-submit="ctrl.showHistory('way', ctrl.wayId)">
       <label for="way-id">Way</label>
-      <div class="input-group col-lg-3 col-md-4">
-        <input type="number" class="form-control" placeholder="way id" id="way-id" ng-model="ctrl.wayId">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="submit">Go!</button>
-        </span>
+      <div class="row">
+        <div class="col-lg-3 col-md-4">
+          <div class="input-group">
+            <input type="number" class="form-control" placeholder="way id" id="way-id" ng-model="ctrl.wayId">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">Go!</button>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('way')">
+        </div>
       </div>
     </form>
     <form ng-submit="ctrl.showHistory('relation', ctrl.relationId)">
       <label for="relation-id">Relation</label>
-      <div class="input-group col-lg-3 col-md-4">
-        <input type="number" class="form-control" placeholder="relation id" id="relation-id" ng-model="ctrl.relationId">
-        <span class="input-group-btn">
-          <button class="btn btn-default" type="submit">Go!</button>
-        </span>
+      <div class="row">
+        <div class="col-lg-3 col-md-4">
+          <div class="input-group">
+            <input type="number" class="form-control" placeholder="relation id" id="relation-id" ng-model="ctrl.relationId">
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit">Go!</button>
+            </span>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('relation')">
+        </div>
       </div>
     </form>
   </div>
