@@ -6,7 +6,6 @@
       OSM
     </a>
     <a class="btn btn-primary" role="button"
-       ng-if="ctrl.type != 'relation'"
        ng-disabled="ctrl.deleted || !ctrl.extendedBounds"
        href="{{ctrl.getJosmLink()}}"
        target="_blank">

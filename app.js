@@ -220,6 +220,19 @@ HistoryCtrl = function(
   }).catch(error => {
     this.error = error;
   });
+  // Fetch full view of a relation and calculate its bounds to display a link
+  // to JOSM.
+  if (this.type == 'relation') {
+    var url = `${API_URL_BASE}relation/${this.id}/full`;
+    fetchOsm($http, url, 'node').then(memberNodes => {
+      if (memberNodes && memberNodes.length) {
+        var bounds = getBounds(memberNodes);
+        this.extendedBounds = L.latLngBounds(
+          extendBounds(bounds.getSouthWest()).getSouthWest(),
+          extendBounds(bounds.getNorthEast()).getNorthEast());
+      }
+    });
+  }
 };
 
 
