@@ -63,7 +63,9 @@ HomeCtrl.prototype.showHistory = function(type, id) {
  * one of hard-coded objects is shown.
  */
 HomeCtrl.prototype.randomize = function(type) {
-  this.ngWindow.ga('send', 'event', 'random', type);
+  if (this.ngWindow.ga) {
+    this.ngWindow.ga('send', 'event', 'random', type);
+  }
   // Max ID for random generation.
   var MAX_ID = {
     'node': 1000000000,
@@ -322,6 +324,9 @@ HistoryCtrl.prototype.populateChangesets = function() {
  * the currently viewed object.
  */
 HistoryCtrl.prototype.getJosmLink = function() {
+  if (!this.extendedBounds) {
+    return '';
+  }
   return 'http://localhost:8111/load_and_zoom' +
       `?left=${this.extendedBounds.getWest()}` +
       `&right=${this.extendedBounds.getEast()}` +
