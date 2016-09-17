@@ -85,7 +85,7 @@ HomeCtrl.prototype.randomize = function(type) {
   // Number of random requests to make to find a good object.
   var NUM_TRIES = 5;
 
-  for (let i = 0; i < NUM_TRIES; i++) {
+  for (var i = 0; i < NUM_TRIES; i++) {
     var id = Math.floor(Math.random() * MAX_ID[type]) + 1;
     var url = `${API_URL_BASE}${type}/${id}`;
     fetchOsm(this.ngHttp, url, type).then((obj) => {
