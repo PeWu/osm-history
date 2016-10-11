@@ -97,6 +97,11 @@ HistoryCtrl = function(
       attribution: '&copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
     }
   };
+  this.mapControls = {
+    fullscreen: {
+      position: 'topleft'
+    }
+  };
 
   var path = `${this.type}/${this.id}/history`;
   this.osmService.fetchOsm(path, this.type).then(history => {

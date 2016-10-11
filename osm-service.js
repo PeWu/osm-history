@@ -61,7 +61,7 @@ getSegments = function(nodes) {
  */
 OsmService.prototype.fetchOsm = function(path, objectType) {
   return this.ngHttp.get(API_URL_BASE + path).then(response => {
-    var data = this.x2js.xml_str2json(response.data).osm[objectType];
+    var data = this.x2js.xml_str2json(response.data).osm[objectType] || [];
     data.forEach(item => {
       if (item.tag) {
         item.tagMap = tagMap(item.tag);
