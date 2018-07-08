@@ -262,7 +262,7 @@ nodeListDiff = function(prev, next) {
         }
         prevIt++;
       }
-      if (endSameId || (endNext && addedIds.has(endNext._id))) {
+      if (endSameId || (endNext && addedIds.has(endNext._id)) || !endPrev) {
         if (startNext) {
           added.push({from: startNext, to: endNext});
         }
