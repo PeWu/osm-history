@@ -256,7 +256,7 @@ nodeListDiff = function(prev, next) {
       prevIt++;
       nextIt++;
     } else {
-      if (endSameId || (endPrev && removedIds.has(endPrev._id))) {
+      if (endSameId || (endPrev && removedIds.has(endPrev._id)) || !endNext) {
         if (startPrev) {
           removed.push({from: startPrev, to: endPrev});
         }
