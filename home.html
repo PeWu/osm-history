@@ -57,7 +57,7 @@
   <div class="panel-body">
     <p>Drag this button to your bookmarks bar:
     <a class="btn btn-primary btn-xs" role="button"
-       href="javascript:(function(){m=window.getSelection().toString().toLowerCase();if(m==(""||null||false)){m=location.href;}m=m.match(/(way|node|relation)\D+(\d+)/);window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));})()">
+       href="javascript:(function(){m=(window.getSelection().toString().toLowerCase()||location.href).match(/(way|node|relation)\D+(\d+)/);window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));})()">
       OSM History
     </a>
     <p>You can use it to navigate to the history page from <a href="https://OpenStreetMap.org">OpenStreetMap.org</a> and some other sites.
