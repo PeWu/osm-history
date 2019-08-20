@@ -72,6 +72,13 @@ objDiff = function(prev, next) {
 };
 
 
+/** Filters out history entries that do not modify any tag. */
+filterTagHistory = function(history) {
+  return history.filter(entry =>
+      entry.diff.tags.some(tag => tag.prev != tag.next));
+};
+
+
 /**
  * Controller for the history pages (way, node, relation).
  */
@@ -87,6 +94,13 @@ HistoryCtrl = function(
   this.ngTimeout = $timeout;
   this.leafletBoundsHelpers = leafletBoundsHelpers;
   this.osmService = osmService;
+
+  /** Full history list. */
+  this.history = [];
+  /** History of tag changes. */
+  this.tagHistory = [];
+  /** Hide versions without tag changes. */
+  this.hideTagless = false;
 
   $rootScope.title = `OSM history: ${this.type} ${this.id}`
 
@@ -121,6 +135,7 @@ HistoryCtrl = function(
       var latLng = latLngFromNode(currentObj);
       this.extendedBounds = extendBounds(latLng);
     }
+    this.tagHistory = filterTagHistory(this.history);
 
     this.populateChangesets();
 
@@ -154,6 +169,11 @@ HistoryCtrl = function(
   }
 };
 
+
+/** Returns the history list to be displayed. */
+HistoryCtrl.prototype.getHistory = function() {
+  return this.hideTagless ? this.tagHistory : this.history;
+};
 
 /**
  * Fetches changeset data for all changes.
