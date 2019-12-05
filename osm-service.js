@@ -1,7 +1,7 @@
 /** Base URL for accessing OSM API. */
 API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/';
 
-OsmService = function($http) {
+OsmService = function($http, $q) {
   this.auth = osmAuth({
     oauth_consumer_key: 'XOoeKShN1NtkKvriuBMnNsPvmBGnWQOUnovgY9fM',
     oauth_secret: '5648E77IcaiGbyVShU9g7tHfLfEllJcpsz0xvJm4',
@@ -10,6 +10,7 @@ OsmService = function($http) {
   });
 
   this.ngHttp = $http;
+  this.ngQ = $q;
 
   /** Converter from XML to json. */
   this.x2js = new X2JS({
@@ -67,7 +68,25 @@ getSegments = function(nodes) {
  * object's tags.
  */
 OsmService.prototype.fetchOsm = function(path, objectType) {
-  return this.ngHttp.get(API_URL_BASE + path).then(response => {
+  var prom;
+  if (this.auth.authenticated()) {
+    prom = this.ngQ((resolve, reject) => {
+      this.auth.xhr({ method: 'GET', path: '/api/0.6/' + path },
+        (err, xml) => {
+          if (err || !xml) {
+            reject(err || 'no xml');
+          } else {
+            var str = new XMLSerializer().serializeToString(xml);
+            resolve({ data: str });
+          }
+        }
+      );
+    });
+  } else {
+    prom = this.ngHttp.get(API_URL_BASE + path);
+  }
+
+  return prom.then(response => {
     var data = this.x2js.xml_str2json(response.data).osm[objectType] || [];
     data.forEach(item => {
       if (item.tag) {
