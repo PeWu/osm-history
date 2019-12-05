@@ -30,13 +30,16 @@
       <div class="footer">
         <div id="auth-pane" class="text-left col-md-6">
           <span id="user" class="hidden">
-            <span id="gravatar"></span>
-            <span id="uname"></span>
-            <span class="spacer">&middot;</span>
+            <a id="ulink" target="_blank">
+              <img id="uavatar" class="avatar auth-item"/>
+              <span id="uname" class="auth-item"></span>
+            </a>
+            <span class="auth-item spacer">&middot;</span>
           </span>
-          <a class="hidden" id="login">Login</a>
-          <a class="hidden" id="logout">Logout</a>
+          <a id="login" class="auth-item hidden">Login</a>
+          <a id="logout" class="auth-item hidden">Logout</a>
         </div>
+
         <div class="text-right col-md-6">
           <a href="https://github.com/PeWu/osm-history">Page source on GitHub</a>
         </div>
@@ -59,12 +62,24 @@
         var auth = osmService.auth;
 
         function done(err, xml) {
-          if (err) {
+          var user = xml && xml.getElementsByTagName('user')[0];
+          if (err || !user) {
             document.getElementById('user').innerHTML = 'Auth error! Try clearing your browser cache';
             return;
           }
-          var u = xml.getElementsByTagName('user')[0];
-          document.getElementById('uname').innerHTML = u.getAttribute('display_name');
+
+          var userName = user.getAttribute('display_name');
+          var userImage = 'https://cdn.jsdelivr.net/gh/openstreetmap/iD@master/svg/iD-sprite/icons/icon-avatar.svg';
+          var userURL = 'https://www.openstreetmap.org/user/' + encodeURIComponent(userName);
+          var img = user.getElementsByTagName('img');
+          if (img && img[0] && img[0].getAttribute('href')) {
+            userImage = img[0].getAttribute('href');
+          }
+
+          document.getElementById('uname').innerHTML = userName;
+          document.getElementById('uavatar').setAttribute('src', userImage);
+          document.getElementById('uavatar').setAttribute('alt', userName);
+          document.getElementById('ulink').setAttribute('href', userURL);
           document.getElementById('user').classList.remove('hidden');
         }
 
