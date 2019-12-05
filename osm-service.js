@@ -2,8 +2,15 @@
 API_URL_BASE = 'https://api.openstreetmap.org/api/0.6/';
 
 OsmService = function($http) {
+  this.auth = osmAuth({
+    oauth_consumer_key: 'XOoeKShN1NtkKvriuBMnNsPvmBGnWQOUnovgY9fM',
+    oauth_secret: '5648E77IcaiGbyVShU9g7tHfLfEllJcpsz0xvJm4',
+    land: 'land.html',
+    url: 'https://www.openstreetmap.org'
+  });
+
   this.ngHttp = $http;
-  
+
   /** Converter from XML to json. */
   this.x2js = new X2JS({
     // All XML nodes under <osm> can be repeated.
