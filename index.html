@@ -12,6 +12,7 @@
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/osm-auth@1/osmauth.min.js"></script>
     <script src="osm-service.js"></script>
+    <script src="login-ctrl.js"></script>
     <script src="home-ctrl.js"></script>
     <script src="history-ctrl.js"></script>
     <script src="app.js"></script>
@@ -26,92 +27,15 @@
       <h1><a ng-href="#/">OSM History Viewer</a></h1>
       <div ng-view></div>
       <div class="clearfix"></div>
-
       <div class="footer">
-        <div id="auth-pane" class="text-left col-md-6">
-          <span id="user" class="hidden">
-            <a id="ulink" target="_blank">
-              <img id="uavatar" class="avatar auth-item"/>
-              <span id="uname" class="auth-item"></span>
-            </a>
-            <span class="auth-item spacer">&middot;</span>
-          </span>
-          <a id="login" class="auth-item hidden">Login</a>
-          <a id="logout" class="auth-item hidden">Logout</a>
+        <div class="text-left col-md-6">
+          <osm-login></osm-login>
         </div>
-
         <div class="text-right col-md-6">
           <a href="https://github.com/PeWu/osm-history">Page source on GitHub</a>
         </div>
       </div>
     </div>
-
-    <script>
-      // wait for Angular to be ready..
-      var intervalID = window.setInterval(function () {
-        var elem = angular.element(document.querySelector('[ng-view]'));
-        var injector = elem.injector();
-        if (injector) {
-          window.clearInterval(intervalID);
-          onReady(injector);
-        }
-      }, 100);
-
-      function onReady(injector) {
-        var osmService = injector.get('osmService');
-        var auth = osmService.auth;
-
-        function done(err, xml) {
-          var user = xml && xml.getElementsByTagName('user')[0];
-          if (err || !user) {
-            document.getElementById('user').innerHTML = 'Auth error! Try clearing your browser cache';
-            return;
-          }
-
-          var userName = user.getAttribute('display_name');
-          var userImage = 'https://cdn.jsdelivr.net/gh/openstreetmap/iD@master/svg/iD-sprite/icons/icon-avatar.svg';
-          var userURL = 'https://www.openstreetmap.org/user/' + encodeURIComponent(userName);
-          var img = user.getElementsByTagName('img');
-          if (img && img[0] && img[0].getAttribute('href')) {
-            userImage = img[0].getAttribute('href');
-          }
-
-          document.getElementById('uname').innerHTML = userName;
-          document.getElementById('uavatar').setAttribute('src', userImage);
-          document.getElementById('uavatar').setAttribute('alt', userName);
-          document.getElementById('ulink').setAttribute('href', userURL);
-          document.getElementById('user').classList.remove('hidden');
-        }
-
-        function fetchDetails() {
-          auth.xhr({ method: 'GET', path: '/api/0.6/user/details' }, done);
-        }
-
-        document.getElementById('login').onclick = function() {
-          auth.authenticate(function() { update(); });
-        };
-
-        document.getElementById('logout').onclick = function() {
-          auth.logout();
-          update();
-        };
-
-        function update() {
-          if (auth.authenticated()) {
-            document.getElementById('login').classList.add('hidden');
-            document.getElementById('logout').classList.remove('hidden');
-            fetchDetails();
-          } else {
-            document.getElementById('login').classList.remove('hidden');
-            document.getElementById('logout').classList.add('hidden');
-            document.getElementById('user').classList.add('hidden');
-          }
-        }
-
-        update();
-      }
-    </script>
-
 
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
