@@ -18,6 +18,19 @@ DiffRowDirective = function() {
 };
 
 
+/**
+ * Directive for displaying the OSM login/logout links.
+ */
+LoginDirective = function() {
+  return {
+    templateUrl: 'osm-login.html',
+    controller: 'LoginCtrl',
+    controllerAs: 'ctrl',
+    replace: true,
+  };
+};
+
+
 // Configure routes.
 app.config(function($routeProvider) {
   $routeProvider
@@ -56,9 +69,11 @@ app.service('osmService', OsmService);
 // Controllers.
 app.controller('HomeCtrl', HomeCtrl);
 app.controller('HistoryCtrl', HistoryCtrl);
+app.controller('LoginCtrl', LoginCtrl);
 
 // Directives.
 app.directive('diffRow', DiffRowDirective);
+app.directive('osmLogin', LoginDirective);
 
 // Filters.
 app.filter('capitalize', () => s => s.charAt(0).toUpperCase() + s.slice(1));

@@ -6,6 +6,22 @@
   margin-bottom: 10px;
 }
 
+.avatar {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+}
+
+.auth-item {
+  margin: 0 2px;
+}
+
+.spacer {
+  font-weight: bold;
+}
+
 label {
   margin-top: 6px;
 }
@@ -38,5 +54,9 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 input[type=number] {
-    -moz-appearance:textfield;
+  -moz-appearance:textfield;
+}
+
+a {
+  cursor: pointer;
 }
