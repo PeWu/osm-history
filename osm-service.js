@@ -96,7 +96,7 @@ OsmService.prototype.fetchOsm = function(path, objectType) {
   var responsePromise =
       this.auth.authenticated() ?
       this.fetchAuthenticated(path) :
-      this.ngHttp.get(API_URL_BASE + path);
+      this.ngHttp.get(API_URL_BASE + path, {headers: {'Accept': '*/*'}});
 
   return responsePromise.then(response => {
     var data = this.x2js.xml_str2json(response.data).osm[objectType] || [];
