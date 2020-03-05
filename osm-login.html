@@ -1,11 +1,27 @@
 <span>
   <span ng-if="ctrl.osmService.authenticated()">
     <a target="_blank" ng-href="{{ctrl.osmService.getUserDetails().url}}">
-      <img class="avatar auth-item" ng-src="{{ctrl.osmService.getUserDetails().img}}" alt="{{ctrl.osmService.getUserDetails().userName}}"/>
-      <span class="auth-item">{{ctrl.osmService.getUserDetails().userName}}</span>
+      <img
+        class="avatar auth-item"
+        ng-src="{{ctrl.osmService.getUserDetails().img}}"
+        alt="{{ctrl.osmService.getUserDetails().userName}}"
+      />
+      <span class="auth-item"
+        >{{ctrl.osmService.getUserDetails().userName}}</span
+      >
     </a>
     <span class="auth-item spacer">&middot;</span>
   </span>
-  <a class="auth-item" ng-click="ctrl.osmService.login()" ng-if="!ctrl.osmService.authenticated()">Login</a>
-  <a class="auth-item" ng-click="ctrl.osmService.logout()" ng-if="ctrl.osmService.authenticated()">Logout</a>
+  <a
+    class="auth-item"
+    ng-click="ctrl.osmService.login()"
+    ng-if="!ctrl.osmService.authenticated()"
+    >Login</a
+  >
+  <a
+    class="auth-item"
+    ng-click="ctrl.osmService.logout()"
+    ng-if="ctrl.osmService.authenticated()"
+    >Logout</a
+  >
 </span>

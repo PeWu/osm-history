@@ -1,60 +1,94 @@
 <h2>{{ctrl.type | capitalize}} {{ctrl.id}}</h2>
 <div class="panel panel-default">
   <div class="panel-body">
-    <a class="btn btn-success" role="button"
-       href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}">
+    <a
+      class="btn btn-success"
+      role="button"
+      href="https://www.openstreetmap.org/{{ctrl.type}}/{{ctrl.id}}"
+    >
       OSM
     </a>
-    <a class="btn btn-primary" role="button"
-       ng-disabled="ctrl.deleted || !ctrl.extendedBounds"
-       href="{{ctrl.getJosmLink()}}"
-       target="_blank">
+    <a
+      class="btn btn-primary"
+      role="button"
+      ng-disabled="ctrl.deleted || !ctrl.extendedBounds"
+      href="{{ctrl.getJosmLink()}}"
+      target="_blank"
+    >
       JOSM
     </a>
-    <a class="btn btn-primary" role="button"
-       ng-disabled="ctrl.deleted"
-       href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}">
+    <a
+      class="btn btn-primary"
+      role="button"
+      ng-disabled="ctrl.deleted"
+      href="https://www.openstreetmap.org/edit?{{ctrl.type}}={{ctrl.id}}"
+    >
       Edit
     </a>
-    <a class="btn btn-danger" role="button"
-       ng-disabled="ctrl.deleted"
-       href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}">
+    <a
+      class="btn btn-danger"
+      role="button"
+      ng-disabled="ctrl.deleted"
+      href="http://rawedit.openstreetmap.fr/edit/{{ctrl.type}}/{{ctrl.id}}"
+    >
       RawEdit
     </a>
-    <a class="btn btn-danger" role="button"
-       ng-disabled="ctrl.deleted"
-       href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}">
+    <a
+      class="btn btn-danger"
+      role="button"
+      ng-disabled="ctrl.deleted"
+      href="http://level0.osmz.ru/?url={{ctrl.type}}/{{ctrl.id}}"
+    >
       Level0
     </a>
-    <a class="btn btn-warning" role="button"
-       href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}">
+    <a
+      class="btn btn-warning"
+      role="button"
+      href="https://osmlab.github.io/osm-deep-history/#/{{ctrl.type}}/{{ctrl.id}}"
+    >
       Deep History
     </a>
-    <a class="btn btn-warning" role="button"
-       href="http://osm.virtuelle-loipe.de/history/?type={{ctrl.type}}&ref={{ctrl.id}}">
+    <a
+      class="btn btn-warning"
+      role="button"
+      href="http://osm.virtuelle-loipe.de/history/?type={{ctrl.type}}&ref={{ctrl.id}}"
+    >
       History Browser
     </a>
-    <a class="btn btn-warning" role="button"
-       href="https://aleung.github.io/osm-visual-history/#/{{ctrl.type}}/{{ctrl.id}}">
+    <a
+      class="btn btn-warning"
+      role="button"
+      href="https://aleung.github.io/osm-visual-history/#/{{ctrl.type}}/{{ctrl.id}}"
+    >
       Visual History
     </a>
-    <a class="btn btn-warning" role="button"
-       href="http://osm.mapki.com/history/{{ctrl.type}}.php?id={{ctrl.id}}">
+    <a
+      class="btn btn-warning"
+      role="button"
+      href="http://osm.mapki.com/history/{{ctrl.type}}.php?id={{ctrl.id}}"
+    >
       Mapki
     </a>
-    <a class="btn btn-primary" role="button"
-       ng-if="ctrl.type == 'relation'"
-       ng-disabled="ctrl.deleted"
-       href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}">
+    <a
+      class="btn btn-primary"
+      role="button"
+      ng-if="ctrl.type == 'relation'"
+      ng-disabled="ctrl.deleted"
+      href="http://ra.osmsurround.org/analyzeRelation?relationId={{ctrl.id}}"
+    >
       Relation Analyzer
     </a>
   </div>
 </div>
 <h2>History</h2>
-<div class="panel panel-default" ng-if="ctrl.history.length != ctrl.tagHistory.length">
+<div
+  class="panel panel-default"
+  ng-if="ctrl.history.length != ctrl.tagHistory.length"
+>
   <div class="panel-body">
     <label>
-      <input type="checkbox" ng-model="ctrl.hideTagless"> Hide versions without tag changes
+      <input type="checkbox" ng-model="ctrl.hideTagless" /> Hide versions
+      without tag changes
     </label>
   </div>
 </div>
@@ -63,33 +97,56 @@
     <div class="panel-heading">
       <h3 class="panel-title">
         Version <b>#{{change.obj._version}}</b>, changeset
-        <a href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">{{change.obj._changeset}}</a>
+        <a
+          href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}"
+          >{{change.obj._changeset}}</a
+        >
         by
-        <a href="https://www.openstreetmap.org/user/{{change.obj._user}}">{{change.obj._user}}</a>
-        at {{change.obj._timestamp  | date:'yyyy-MM-dd HH:mm'}}
+        <a href="https://www.openstreetmap.org/user/{{change.obj._user}}"
+          >{{change.obj._user}}</a
+        >
+        at {{change.obj._timestamp | date:'yyyy-MM-dd HH:mm'}}
         <div class="pull-right">
-          <a class="btn btn-success btn-xs" role="button"
-             href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}">
+          <a
+            class="btn btn-success btn-xs"
+            role="button"
+            href="https://www.openstreetmap.org/changeset/{{change.obj._changeset}}"
+          >
             OSM
           </a>
-          <a class="btn btn-warning btn-xs" role="button"
-             href="https://overpass-api.de/achavi/?changeset={{change.obj._changeset}}">
+          <a
+            class="btn btn-warning btn-xs"
+            role="button"
+            href="https://overpass-api.de/achavi/?changeset={{change.obj._changeset}}"
+          >
             Achavi
           </a>
-          <a class="btn btn-warning btn-xs" role="button"
-             href="http://osmhv.openstreetmap.de/changeset.jsp?id={{change.obj._changeset}}">
+          <a
+            class="btn btn-warning btn-xs"
+            role="button"
+            href="http://osmhv.openstreetmap.de/changeset.jsp?id={{change.obj._changeset}}"
+          >
             OSMHV
           </a>
-          <a class="btn btn-warning btn-xs" role="button"
-             href="https://osmcha.mapbox.com/changesets/{{change.obj._changeset}}">
+          <a
+            class="btn btn-warning btn-xs"
+            role="button"
+            href="https://osmcha.mapbox.com/changesets/{{change.obj._changeset}}"
+          >
             OSMCha
           </a>
-          <a class="btn btn-warning btn-xs" role="button"
-             href="https://osmlab.github.io/changeset-map/#{{change.obj._changeset}}">
+          <a
+            class="btn btn-warning btn-xs"
+            role="button"
+            href="https://osmlab.github.io/changeset-map/#{{change.obj._changeset}}"
+          >
             OSM Lab
           </a>
-          <a class="btn btn-info btn-xs" role="button"
-             href="http://hdyc.neis-one.org/?{{change.obj._user}}">
+          <a
+            class="btn btn-info btn-xs"
+            role="button"
+            href="http://hdyc.neis-one.org/?{{change.obj._user}}"
+          >
             User contribution
           </a>
         </div>
@@ -99,44 +156,57 @@
       <div class="comment">
         {{change.changeset.tagMap.comment || '&nbsp;'}}
       </div>
-      <div ng-if="change.obj._visible != 'true'" class="alert alert-danger" role="alert">
+      <div
+        ng-if="change.obj._visible != 'true'"
+        class="alert alert-danger"
+        role="alert"
+      >
         <b>{{ctrl.type | uppercase}} DELETED</b>
       </div>
       <div ng-if="change.obj._visible == 'true'">
         <div class="col-md-8">
           <table class="table table-condensed">
             <colgroup>
-              <col class="col-xs-2">
-              <col class="col-xs-4">
-              <col class="col-xs-4">
+              <col class="col-xs-2" />
+              <col class="col-xs-4" />
+              <col class="col-xs-4" />
             </colgroup>
-            <tr diff-row
-                ng-repeat="diff in change.diff.tags"
-                key="{{diff.key}}"
-                prev="diff.prev"
-                next="diff.next">
-            <tr diff-row
-                key="Nodes"
-                prev="change.diff.nodeCount.prev"
-                next="change.diff.nodeCount.next">
-            <tr diff-row
-                key="Members"
-                prev="change.diff.memberCount.prev"
-                next="change.diff.memberCount.next">
-            <tr diff-row
-                key="Location"
-                prev="ctrl.formatCoords(change.diff.coordinates.prev)"
-                next="ctrl.formatCoords(change.diff.coordinates.next)">
+            <tr
+              diff-row
+              ng-repeat="diff in change.diff.tags"
+              key="{{diff.key}}"
+              prev="diff.prev"
+              next="diff.next"
+            ></tr>
+            <tr
+              diff-row
+              key="Nodes"
+              prev="change.diff.nodeCount.prev"
+              next="change.diff.nodeCount.next"
+            ></tr>
+            <tr
+              diff-row
+              key="Members"
+              prev="change.diff.memberCount.prev"
+              next="change.diff.memberCount.next"
+            ></tr>
+            <tr
+              diff-row
+              key="Location"
+              prev="ctrl.formatCoords(change.diff.coordinates.prev)"
+              next="ctrl.formatCoords(change.diff.coordinates.next)"
+            ></tr>
           </table>
         </div>
         <leaflet
-            ng-if="change.mapData"
-            paths="change.mapData.paths"
-            bounds="change.mapData.bounds"
-            tiles="ctrl.mapTiles"
-            controls="ctrl.mapControls"
-            height="200px"
-            width="100%"></leaflet>
+          ng-if="change.mapData"
+          paths="change.mapData.paths"
+          bounds="change.mapData.bounds"
+          tiles="ctrl.mapTiles"
+          controls="ctrl.mapControls"
+          height="200px"
+          width="100%"
+        ></leaflet>
       </div>
     </div>
   </div>

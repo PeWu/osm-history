@@ -1,6 +1,5 @@
 var app = angular.module('osmHistory', ['ngRoute', 'leaflet-directive']);
 
-
 /**
  * Directive for displaying one table row with a diff between 2 varsions
  * of a tag.
@@ -13,10 +12,9 @@ DiffRowDirective = function() {
       key: '@',
       prev: '=',
       next: '=',
-    }
+    },
   };
 };
-
 
 /**
  * Directive for displaying the OSM login/logout links.
@@ -30,20 +28,19 @@ LoginDirective = function() {
   };
 };
 
-
 // Configure routes.
 app.config(function($routeProvider) {
   $routeProvider
-      .when('/', {
-        templateUrl: 'home.html',
-        controller: 'HomeCtrl',
-        controllerAs: 'ctrl'
-      })
-      .when('/:type/:id', {
-        templateUrl: 'history.html',
-        controller: 'HistoryCtrl',
-        controllerAs: 'ctrl'
-      });
+    .when('/', {
+      templateUrl: 'home.html',
+      controller: 'HomeCtrl',
+      controllerAs: 'ctrl',
+    })
+    .when('/:type/:id', {
+      templateUrl: 'history.html',
+      controller: 'HistoryCtrl',
+      controllerAs: 'ctrl',
+    });
 });
 
 // Disable debug logs.
@@ -59,7 +56,7 @@ app.run(function($rootScope, $location, $window) {
     }
     // Replace numeric object ID in path with a placeholder.
     var path = $location.path().replace(/\d+/, ':id');
-    $window.ga('send', 'pageview', {page: path});
+    $window.ga('send', 'pageview', { page: path });
   });
 });
 

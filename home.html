@@ -5,14 +5,25 @@
       <div class="row">
         <div class="col-lg-3 col-md-4">
           <div class="input-group">
-            <input type="number" class="form-control" placeholder="node id" id="node-id" ng-model="ctrl.nodeId">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="node id"
+              id="node-id"
+              ng-model="ctrl.nodeId"
+            />
             <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Go!</button>
             </span>
           </div>
         </div>
         <div class="col-md-3">
-          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('node')">
+          <input
+            class="btn btn-warning"
+            type="button"
+            value="Random"
+            ng-click="ctrl.randomize('node')"
+          />
         </div>
       </div>
     </form>
@@ -21,14 +32,25 @@
       <div class="row">
         <div class="col-lg-3 col-md-4">
           <div class="input-group">
-            <input type="number" class="form-control" placeholder="way id" id="way-id" ng-model="ctrl.wayId">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="way id"
+              id="way-id"
+              ng-model="ctrl.wayId"
+            />
             <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Go!</button>
             </span>
           </div>
         </div>
         <div class="col-md-3">
-          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('way')">
+          <input
+            class="btn btn-warning"
+            type="button"
+            value="Random"
+            ng-click="ctrl.randomize('way')"
+          />
         </div>
       </div>
     </form>
@@ -37,14 +59,25 @@
       <div class="row">
         <div class="col-lg-3 col-md-4">
           <div class="input-group">
-            <input type="number" class="form-control" placeholder="relation id" id="relation-id" ng-model="ctrl.relationId">
+            <input
+              type="number"
+              class="form-control"
+              placeholder="relation id"
+              id="relation-id"
+              ng-model="ctrl.relationId"
+            />
             <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Go!</button>
             </span>
           </div>
         </div>
         <div class="col-md-3">
-          <input class="btn btn-warning" type="button" value="Random" ng-click="ctrl.randomize('relation')">
+          <input
+            class="btn btn-warning"
+            type="button"
+            value="Random"
+            ng-click="ctrl.randomize('relation')"
+          />
         </div>
       </div>
     </form>
@@ -55,11 +88,20 @@
     <h3 class="panel-title">Bookmarklet</h3>
   </div>
   <div class="panel-body">
-    <p>Drag this button to your bookmarks bar:
-    <a class="btn btn-primary btn-xs" role="button"
-       href="javascript:(function(){m=(window.getSelection().toString().toLowerCase()||location.href).match(/(way|node|relation)\D+(\d+)/);window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));})()">
-      OSM History
-    </a>
-    <p>You can use it to navigate to the history page from <a href="https://OpenStreetMap.org">OpenStreetMap.org</a> and some other sites.
+    <p>
+      Drag this button to your bookmarks bar:
+      <a
+        class="btn btn-primary btn-xs"
+        role="button"
+        href="javascript:(function(){m=(window.getSelection().toString().toLowerCase()||location.href).match(/(way|node|relation)\D+(\d+)/);window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));})()"
+      >
+        OSM History
+      </a>
+    </p>
+    <p>
+      You can use it to navigate to the history page from
+      <a href="https://OpenStreetMap.org">OpenStreetMap.org</a> and some other
+      sites.
+    </p>
   </div>
 </div>

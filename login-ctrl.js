@@ -3,4 +3,4 @@
  */
 LoginCtrl = function(osmService) {
   this.osmService = osmService;
-}
+};
