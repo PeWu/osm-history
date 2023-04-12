@@ -93,7 +93,7 @@
       <a
         class="btn btn-primary btn-xs"
         role="button"
-        href="javascript:(function(){m=(window.getSelection().toString().toLowerCase()||location.href).match(/(way|node|relation)\D+(\d+)/);window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));})()"
+        href="javascript:(function(){m=(window.getSelection().toString().toLowerCase()||location.href).match(/(way|node|relation)\D+(\d+)/);if(m!=null){window.open('https://pewu.github.io/osm-history/#/'+(m?m[1]+'/'+m[2]:''));}else{alert('The selection and the URL doesn\'t contain any object id.');};})()"
       >
         OSM History
       </a>
