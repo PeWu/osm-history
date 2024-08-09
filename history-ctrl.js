@@ -16,25 +16,34 @@ extendBounds = function(latLng) {
 };
 
 /**
- * Returns a list of tags with previous and next values.
+ * Returns a list of tags with previous and next values that are changed.
  * A previous or next value is undefined if it doesn't exist.
  */
 tagsDiff = function(prev, next) {
   var allTags = new Map();
 
-  if (prev && prev.tag) {
-    prev.tag.forEach(tag => allTags.set(tag._k, { prev: tag._v }));
+  if (prev?.tag) {
+    prev.tag.forEach(tag => {
+      var entry = next?.tag ? next.tag.find(element => element._k === tag._k) : null;
+      if (!entry) {
+        allTags.set(tag._k, {prev: tag._v});
+      }
+    })
   }
+
   if (next.tag) {
     next.tag.forEach(tag => {
-      var entry = allTags.get(tag._k);
-      if (!entry) {
-        entry = {};
-        allTags.set(tag._k, entry);
+      var entry = prev?.tag ? prev.tag.find(element => element._k === tag._k) : null;
+      if (entry) {
+        if (entry._v != tag._v) {
+          allTags.set(tag._k, { prev: entry._v, next: tag._v });
+        }
+      } else {
+        allTags.set(tag._k, {next: tag._v});
       }
-      entry.next = tag._v;
-    });
+    })
   }
+
   return [...allTags].sort().map(entry => {
     var prev = entry[1].prev;
     var next = entry[1].next;
@@ -100,8 +109,10 @@ HistoryCtrl = function(
   this.ngTimeout = $timeout;
   this.leafletBoundsHelpers = leafletBoundsHelpers;
   this.osmService = osmService;
+  this.numberOfDisplayedChanges = 50;
 
-  /** Full history list. */
+  /** Full and partial history lists. */
+  this.fullHistory = [];
   this.history = [];
   /** History of tag changes. */
   this.tagHistory = [];
@@ -128,43 +139,14 @@ HistoryCtrl = function(
   this.osmService
     .fetchOsm(path, this.type)
     .then(history => {
-      var prev = null;
-      this.history = history.map(obj => {
-        var diff = objDiff(prev, obj);
-        prev = obj;
-        return {
-          obj: obj,
-          diff: diff,
-        };
-      });
-      this.history.reverse(); // Start with the newest change.
-      var currentObj = this.history[0].obj;
-      this.deleted = currentObj._visible == 'false';
-      if (this.type == 'node' && !this.deleted) {
-        var latLng = latLngFromNode(currentObj);
-        this.extendedBounds = extendBounds(latLng);
-      }
-      this.tagHistory = filterTagHistory(this.history);
+      this.fullHistory = history;
 
-      this.populateChangesets();
-
-      this.populateWayHistory().then(() => {
-        this.populateWayMapData();
-        // Calculate bounds for JOSM link.
-        if (this.type == 'way' && this.history[0].nodes) {
-          var bounds = getBounds(this.history[0].nodes);
-          this.extendedBounds = L.latLngBounds(
-            extendBounds(bounds.getSouthWest()).getSouthWest(),
-            extendBounds(bounds.getNorthEast()).getNorthEast()
-          );
-        }
-      });
-
-      this.populateMapData();
+      this.updateHistory();
     })
     .catch(error => {
       this.error = error;
     });
+
   // Fetch full view of a relation and calculate its bounds to display a link
   // to JOSM.
   if (this.type == 'relation') {
@@ -181,9 +163,70 @@ HistoryCtrl = function(
   }
 };
 
+/** Updates internal buffers with selected window of history */
+HistoryCtrl.prototype.updateHistory = function() {
+  var clippedHistory = this.fullHistory.slice(-this.numberOfDisplayedChanges);
+
+  var prev = null;
+  if (this.numberOfDisplayedChanges < this.fullHistory.length) {
+    prev = this.fullHistory[this.fullHistory.length - this.numberOfDisplayedChanges - 1];
+  }
+
+  this.history = clippedHistory.map(obj => {
+    var diff = objDiff(prev, obj);
+    prev = obj;
+    return {
+      obj: obj,
+      diff: diff,
+    };
+  });
+
+  this.history.reverse();
+
+  var currentObj = this.history[0].obj;
+  this.deleted = currentObj._visible == 'false';
+  if (this.type == 'node' && !this.deleted) {
+    var latLng = latLngFromNode(currentObj);
+    this.extendedBounds = extendBounds(latLng);
+  }
+
+  this.tagHistory = filterTagHistory(this.history);
+
+  this.populateChangesets();
+
+  this.populateWayHistory().then(() => {
+    this.populateWayMapData();
+    // Calculate bounds for JOSM link.
+    if (this.type == 'way' && this.history[0].nodes) {
+      var bounds = getBounds(this.history[0].nodes);
+      this.extendedBounds = L.latLngBounds(
+        extendBounds(bounds.getSouthWest()).getSouthWest(),
+        extendBounds(bounds.getNorthEast()).getNorthEast()
+      );
+    }
+  });
+
+  this.populateMapData();
+}
+
 /** Returns the history list to be displayed. */
 HistoryCtrl.prototype.getHistory = function() {
   return this.hideTagless ? this.tagHistory : this.history;
+};
+
+/** Loads more changes */
+HistoryCtrl.prototype.loadMore = function() {
+  this.numberOfDisplayedChanges += 50;
+  if (this.numberOfDisplayedChanges > this.fullHistory.length) {
+    this.numberOfDisplayedChanges = this.fullHistory.length;
+  }
+  this.updateHistory();
+};
+
+/** Loads all remaining changes */
+HistoryCtrl.prototype.loadAll = function() {
+  this.numberOfDisplayedChanges = this.fullHistory.length;
+  this.updateHistory();
 };
 
 /**
