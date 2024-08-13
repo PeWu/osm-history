@@ -161,6 +161,7 @@
           <table class="table table-condensed">
             <colgroup>
               <col class="col-xs-2" />
+              <col class="col-xs-2" />
               <col class="col-xs-4" />
               <col class="col-xs-4" />
             </colgroup>
@@ -173,21 +174,58 @@
             ></tr>
             <tr
               diff-row
-              key="Nodes"
-              prev="change.diff.nodeCount.prev"
-              next="change.diff.nodeCount.next"
-            ></tr>
-            <tr
-              diff-row
-              key="Members"
-              prev="change.diff.memberCount.prev"
-              next="change.diff.memberCount.next"
-            ></tr>
-            <tr
-              diff-row
               key="Location"
               prev="ctrl.formatCoords(change.diff.coordinates.prev)"
               next="ctrl.formatCoords(change.diff.coordinates.next)"
+            ></tr>
+          </table>
+          <table ng-if="change.diff.nodesList.length > 0" class="table table-condensed">
+            <caption>Nodes Changes</caption>
+            <colgroup>
+              <col class="col-xs-2" />
+              <col class="col-xs-2" />
+              <col class="col-xs-4" />
+              <col class="col-xs-4" />
+              <tr>
+                <th>Type</th>
+                <th></th>
+                <th>Removed Id</th>
+                <th>Added Id</th>
+              </tr>
+            </colgroup>
+            <tr
+              diff-row
+              ng-repeat="diff in change.diff.nodesList"
+              key="{{diff.key}}"
+              prev="diff.prev"
+              next="diff.next"
+              ng-attr-url="{{'https://www.openstreetmap.org/node/' + (diff.prev ? diff.prev : diff.next)}}"
+              context="nodes"
+            ></tr>
+          </table>
+          <table ng-if="change.diff.membersList.length > 0" class="table table-condensed">
+            <caption>Members Changes</caption>
+            <colgroup>
+              <col class="col-xs-2" />
+              <col class="col-xs-2" />
+              <col class="col-xs-4" />
+              <col class="col-xs-4" />
+            </colgroup>
+            <tr>
+              <th>Type</th>
+              <th>Id</th>
+              <th>Old Role</th>
+              <th>New Role</th>
+            </tr>
+            <tr
+              diff-row
+              ng-repeat="diff in change.diff.membersList"
+              key="{{diff.key}}"
+              prev="diff.prev"
+              next="diff.next"
+              additional="diff.additional"
+              ng-attr-url="{{'https://www.openstreetmap.org/' + diff.key + '/' + diff.additional}}"
+              context="members"
             ></tr>
           </table>
         </div>

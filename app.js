@@ -1,7 +1,7 @@
 var app = angular.module('osmHistory', ['ngRoute', 'leaflet-directive']);
 
 /**
- * Directive for displaying one table row with a diff between 2 varsions
+ * Directive for displaying one table row with a diff between 2 versions
  * of a tag.
  */
 DiffRowDirective = function() {
@@ -12,6 +12,9 @@ DiffRowDirective = function() {
       key: '@',
       prev: '=',
       next: '=',
+      additional: '=',
+      url: '@',
+      context: '@',
     },
   };
 };

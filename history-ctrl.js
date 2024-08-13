@@ -52,24 +52,123 @@ tagsDiff = function(prev, next) {
  */
 objDiff = function(prev, next) {
   var allTagsList = tagsDiff(prev, next);
-  var nodeCount = {
-    prev: prev && prev.nd && prev.nd.length,
-    next: next.nd && next.nd.length,
-  };
-  var memberCount = {
-    prev: prev && prev.member && prev.member.length,
-    next: next.member && next.member.length,
-  };
   var coordinates = {
     prev: latLngFromNode(prev),
     next: latLngFromNode(next),
   };
 
+  const prevNodesSet = new Set();
+  const nextNodesSet = new Set();
+  prev?.nd?.forEach(prevNd => prevNodesSet.add(prevNd._ref));
+  next?.nd?.forEach(nextNd => nextNodesSet.add(nextNd._ref));
+
+  const nodesList = [];
+  prev?.nd?.forEach(prevNd => {
+    if (!nextNodesSet.has(prevNd._ref)) {
+      nodesList.push({ key: 'nd', prev: prevNd._ref, additional: '' });
+    }
+  });
+
+  next?.nd?.forEach(nextNd => {
+    if (!prevNodesSet.has(nextNd._ref)) {
+      nodesList.push({ key: 'nd', next: nextNd._ref, additional: '' });
+    }
+  });
+
+  const prevMembersMap = new Map();
+  const nextMembersMap = new Map();
+
+  const createKey = (member) => `${member._type}:${member._ref}`;
+  const parseKey = (key) => {
+    const [type, ref] = key.split(':');
+
+    return {
+      _type: type,
+      _ref: ref
+    };
+  };
+  
+  prev?.member?.forEach(prevMember => {
+    const key = createKey(prevMember);
+    if (!prevMembersMap.has(key)) {
+        prevMembersMap.set(key, new Set());
+    }
+
+    const rolesSet = prevMembersMap.get(key);
+    rolesSet.add(prevMember._role);
+  });
+  next?.member?.forEach(nextMember => {
+    const key = createKey(nextMember);
+    if (!nextMembersMap.has(key)) {
+        nextMembersMap.set(key, new Set());
+    }
+
+    const rolesSet = nextMembersMap.get(key);
+    rolesSet.add(nextMember._role);
+  });
+
+  const membersList = [];
+  prev?.member?.forEach(prevMember => {
+    const key = createKey(prevMember);
+    if (!nextMembersMap.has(key)) {
+      membersList.push({ key: prevMember._type, prev: prevMember._role, additional: prevMember._ref });
+      prevMembersMap.delete(key);
+    }
+  });
+  next?.member?.forEach(nextMember => {
+    const key = createKey(nextMember);
+    if (!prevMembersMap.has(key)) {
+      membersList.push({ key: nextMember._type, next: nextMember._role, additional: nextMember._ref });
+      nextMembersMap.delete(key);
+    }
+  });
+
+  prevMembersMap.forEach((prevRoles, key) => {
+    const parsedKey = parseKey(key);
+    var nextRoles = nextMembersMap.get(key);
+
+    const itemsToDelete = [...prevRoles].filter(prevRole => nextRoles.has(prevRole));
+    itemsToDelete.forEach(itemToDelete => {
+      prevRoles.delete(itemToDelete);
+      nextRoles.delete(itemToDelete);
+    });
+
+    var difference = Math.abs(prevRoles.size - nextRoles.size);
+    if (prevRoles.size < nextRoles.size) {
+      for (let i = 0; i < difference; i++) {
+        const nextIterator = nextRoles.values();
+        const nextElement = nextIterator.next().value;
+
+        nextRoles.delete(nextElement);
+
+        membersList.push({ key: parsedKey._type, next: nextElement, additional: parsedKey._ref });
+      }
+    } else if (nextRoles.size < prevRoles.size) {
+      for (let i = 0; i < difference; i++) {
+        const prevIterator = prevRoles.values();
+        const prevElement = prevIterator.next().value;
+
+        prevRoles.delete(prevElement);
+
+        membersList.push({ key: parsedKey._type, prev: prevElement, additional: parsedKey._ref });
+      }
+    }
+
+    const prevIterator = prevRoles.values();
+    const nextIterator = nextRoles.values();
+    for (let i = 0; i < nextRoles.size; i++) {
+      const prevElement = prevIterator.next().value;
+      const nextElement = nextIterator.next().value;
+
+      membersList.push({ key: parsedKey._type, prev: prevElement, next: nextElement, additional: parsedKey._ref });
+    }
+  });
+
   return {
     tags: allTagsList,
-    nodeCount: nodeCount,
-    memberCount: memberCount,
     coordinates: coordinates,
+    nodesList: nodesList,
+    membersList: membersList,
   };
 };
 
