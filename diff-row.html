@@ -1,11 +1,17 @@
-<tr ng-class="{unchanged: prev == next, warning: prev && next && prev != next}">
+<tr ng-class="{unchanged: prev == next, warning: (prev || prev === '') && (next || next === '') && prev != next}">
   <th ng-class="{danger: next == undefined, success: prev == undefined}">
     {{key}}
   </th>
+  <td ng-class="{danger: next == undefined, success: prev == undefined}">
+    <a ng-if="additional && url" href="{{url}}" target="_blank">{{additional}}</a>
+    <span ng-if="!additional || !url">{{additional}}</span>
+  </td>
   <td ng-class="{danger: next == undefined}">
-    {{prev}}
+    <a ng-if="prev && url && context === 'nodes'" href="{{url}}" target="_blank">{{prev}}</a>
+    <span ng-if="!prev || !url || context !== 'nodes'">{{prev}}</span>
   </td>
   <td ng-class="{success: prev == undefined}">
-    {{next}}
+    <a ng-if="next && url && context === 'nodes'" href="{{url}}" target="_blank">{{next}}</a>
+    <span ng-if="!next || !url || context !== 'nodes'">{{next}}</span>
   </td>
 </tr>
