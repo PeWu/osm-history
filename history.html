@@ -248,3 +248,19 @@
 <div ng-if="ctrl.error" class="alert alert-danger" role="alert">
   Error loading history.
 </div>
+<div class="text-center" ng-if="ctrl.fullHistory.length > 50 && ctrl.numberOfDisplayedChanges < ctrl.fullHistory.length">
+  <button
+    class="btn btn-default"
+    ng-click="ctrl.loadMore()"
+  >
+    Load More
+  </button>
+  <span>/</span>
+  <button
+    class="btn btn-default"
+    ng-click="ctrl.loadAll()"
+  >
+    Load All
+  </button>
+  <br>
+</div>
